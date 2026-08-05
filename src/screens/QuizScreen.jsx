@@ -1,7 +1,16 @@
 import { useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import Header from '../components/Header.jsx'
 import Modal from '../components/Modal.jsx'
-import { fmtTime, shuffle, promptValue, answerValue, promptLabel, buildOptions } from '../utils.js'
+import {
+  fmtTime,
+  shuffle,
+  promptValue,
+  answerValue,
+  promptLabel,
+  buildOptions,
+  isTypedMode,
+  normalize,
+} from '../utils.js'
 
 const PRAISE = ['Goed zo!', 'Top!', 'Knap gedaan!', 'Yes!']
 
@@ -91,7 +100,10 @@ function QuizScreen({ pack, direction, playerName, sound, onFinish, onBackToMenu
   const [state, dispatch] = useReducer(reducer, pack, initialQuizState)
   const [elapsed, setElapsed] = useState(0)
   const [showConfirm, setShowConfirm] = useState(false)
+  const [typedValue, setTypedValue] = useState('')
   const startedAtRef = useRef(Date.now())
+  const inputRef = useRef(null)
+  const typed = isTypedMode(direction)
 
   const question = pack.questions[state.activeIndex]
   const shownPrompt = promptValue(question, direction)
@@ -109,6 +121,12 @@ function QuizScreen({ pack, direction, playerName, sound, onFinish, onBackToMenu
     return () => clearInterval(id)
   }, [])
 
+  useEffect(() => {
+    if (!typed || state.answered) return
+    setTypedValue('')
+    if (inputRef.current) inputRef.current.focus()
+  }, [typed, state.activeIndex, state.answered])
+
   const selectOption = (value) => {
     if (state.answered) return
     dispatch({
@@ -116,6 +134,16 @@ function QuizScreen({ pack, direction, playerName, sound, onFinish, onBackToMenu
       isCorrect: value === correctAnswer,
       idx: state.activeIndex,
       selectedValue: value,
+    })
+  }
+
+  const submitTyped = () => {
+    if (state.answered || !typedValue.trim()) return
+    dispatch({
+      type: 'SUBMIT',
+      isCorrect: normalize(typedValue) === normalize(correctAnswer),
+      idx: state.activeIndex,
+      selectedValue: typedValue,
     })
   }
 
@@ -157,10 +185,12 @@ function QuizScreen({ pack, direction, playerName, sound, onFinish, onBackToMenu
       if (e.key !== 'Enter') return
       if (showConfirm) return
       if (state.answered) dispatch({ type: 'ADVANCE' })
+      else if (typed) submitTyped()
     }
     document.addEventListener('keydown', handler)
     return () => document.removeEventListener('keydown', handler)
-  }, [state.answered, showConfirm])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.answered, showConfirm, typed, typedValue, correctAnswer])
 
   const requestBackToMenu = () => setShowConfirm(true)
 
@@ -182,6 +212,7 @@ function QuizScreen({ pack, direction, playerName, sound, onFinish, onBackToMenu
             <div className="player-badge">
               👤 {playerName} &middot; {pack.title}
             </div>
+            {typed && <span className="toets-pill toets-pill-header">📝 TOETS</span>}
             <button className="menu-btn" onClick={requestBackToMenu}>
               🏠 Hoofdmenu
             </button>
@@ -216,31 +247,51 @@ function QuizScreen({ pack, direction, playerName, sound, onFinish, onBackToMenu
         </div>
 
         <div className="quiz-card">
-          <div className="prompt-card">
+          <div className={`prompt-card ${typed ? 'prompt-card-toets' : ''}`}>
             <div className="prompt-label">{promptLabel(direction)}</div>
             <div className="prompt-word">{shownPrompt}</div>
           </div>
 
-          <div className="options-grid">
-            {options.map((opt) => {
-              let cls = 'option-btn'
-              if (state.answered) {
-                if (opt === correctAnswer) cls += ' correct'
-                else if (opt === state.selectedValue) cls += ' wrong'
-                else cls += ' disabled'
-              }
-              return (
-                <button
-                  key={opt}
-                  className={cls}
-                  disabled={state.answered}
-                  onClick={() => selectOption(opt)}
-                >
-                  {opt}
-                </button>
-              )
-            })}
-          </div>
+          {typed ? (
+            <div className="answer-row">
+              <input
+                ref={inputRef}
+                type="text"
+                placeholder="typ hier het cijfer of de letter..."
+                autoComplete="off"
+                autoCapitalize="off"
+                spellCheck="false"
+                disabled={state.answered}
+                value={typedValue}
+                onChange={(e) => setTypedValue(e.target.value)}
+                className={state.answered ? (state.lastResult === 'correct' ? 'correct' : 'wrong') : ''}
+              />
+              <button className="check-btn" disabled={state.answered || !typedValue.trim()} onClick={submitTyped}>
+                Controleer
+              </button>
+            </div>
+          ) : (
+            <div className="options-grid">
+              {options.map((opt) => {
+                let cls = 'option-btn'
+                if (state.answered) {
+                  if (opt === correctAnswer) cls += ' correct'
+                  else if (opt === state.selectedValue) cls += ' wrong'
+                  else cls += ' disabled'
+                }
+                return (
+                  <button
+                    key={opt}
+                    className={cls}
+                    disabled={state.answered}
+                    onClick={() => selectOption(opt)}
+                  >
+                    {opt}
+                  </button>
+                )
+              })}
+            </div>
+          )}
 
           <div
             className={`msg ${state.lastResult === 'correct' ? 'good' : state.lastResult === 'wrong' ? 'bad' : ''}`}

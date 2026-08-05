@@ -33,7 +33,7 @@ function StartScreen({
       <Header soundEnabled={sound.enabled} onToggleSound={sound.toggle} />
       <div className="panel">
         <h2>Wie gaat er oefenen?</h2>
-        <p className="sub">Vul je naam in, kies een kaart en een richting om te starten</p>
+        <p className="sub">Vul je naam in, kies een kaart en een oefenvorm om te starten</p>
         <form onSubmit={handleSubmit}>
           <label htmlFor="nameInput">Naam</label>
           <input
@@ -59,7 +59,7 @@ function StartScreen({
             ))}
           </div>
 
-          <label>Richting</label>
+          <label>Oefenvorm</label>
           <div className="dir-toggle">
             <button
               type="button"
@@ -76,6 +76,20 @@ function StartScreen({
               Naam ➜ Cijfer/letter
             </button>
           </div>
+
+          <button
+            type="button"
+            className={`toets-btn ${direction === 'toets' ? 'active' : ''}`}
+            onClick={() => setDirection('toets')}
+          >
+            <span className="toets-pill">TOETS</span>
+            <span>Zelf typen — geen meerkeuze, net als op papier</span>
+          </button>
+          {direction === 'toets' && (
+            <p className="sub toets-hint">
+              Bijvoorbeeld: <b>Waar ligt Duitsland?</b> → jij typt <b>14</b>.
+            </p>
+          )}
 
           <button type="submit" className="start-btn" disabled={!packId}>
             Start! ➜

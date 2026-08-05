@@ -87,4 +87,22 @@ describe('StartScreen', () => {
     await user.click(screen.getByText(/Bekijk scorebord/))
     expect(onOpenBoard).toHaveBeenCalledTimes(1)
   })
+
+  it('choosing the Toets button calls setDirection with "toets" and shows an example hint', async () => {
+    const user = userEvent.setup()
+    const setDirection = vi.fn()
+    setup({ setDirection })
+    await user.click(screen.getByText(/Zelf typen/))
+    expect(setDirection).toHaveBeenCalledWith('toets')
+  })
+
+  it('shows the typed-answer example hint once Toets is selected', async () => {
+    setup({ direction: 'toets' })
+    expect(screen.getByText(/Waar ligt Duitsland/)).toBeInTheDocument()
+  })
+
+  it('does not show the toets hint for the multiple-choice directions', async () => {
+    setup({ direction: 'code-name' })
+    expect(screen.queryByText(/Waar ligt Duitsland/)).not.toBeInTheDocument()
+  })
 })

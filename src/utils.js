@@ -13,23 +13,37 @@ export function fmtTime(sec) {
   return `${m}:${String(s).padStart(2, '0')}`
 }
 
+// De "toets" variant is net als op papier: je krijgt een plaatsnaam en typt zelf
+// het cijfer of de letter in (geen meerkeuze).
+export function isTypedMode(direction) {
+  return direction === 'toets'
+}
+
+export function normalize(str) {
+  return String(str).trim().toLowerCase()
+}
+
 // Item dat getoond wordt als vraag
 export function promptValue(question, direction) {
+  if (direction === 'toets') return `Waar ligt ${question.place}?`
   return direction === 'code-name' ? question.answer : question.place
 }
 
-// Item dat als antwoord gekozen moet worden
+// Item dat als antwoord gekozen (of getypt) moet worden
 export function answerValue(question, direction) {
+  if (direction === 'toets') return question.answer
   return direction === 'code-name' ? question.place : question.answer
 }
 
 export function promptLabel(direction) {
+  if (direction === 'toets') return '📝 Toetsvraag'
   return direction === 'code-name'
     ? 'Welke plaats hoort bij dit cijfer of deze letter?'
     : 'Welk cijfer of welke letter hoort bij'
 }
 
 export function directionLabel(direction) {
+  if (direction === 'toets') return '📝 Toets (zelf typen)'
   return direction === 'code-name' ? 'Cijfer/letter ➜ Naam' : 'Naam ➜ Cijfer/letter'
 }
 

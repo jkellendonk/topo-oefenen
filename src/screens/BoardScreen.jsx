@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import Header from '../components/Header.jsx'
-import { fmtTime, directionLabel } from '../utils.js'
+import { fmtTime, directionLabel, isTypedMode } from '../utils.js'
 import { getScores } from '../api.js'
 
 function computeDeltas(scores) {
@@ -76,7 +76,10 @@ function BoardScreen({ sound, onBack }) {
               {rows.map((r) => (
                 <div className="board-row" key={r.id}>
                   <div className="board-name">
-                    {r.pack.title} <span className="dim">{directionLabel(r.direction)}</span>
+                    {r.pack.title}{' '}
+                    <span className={isTypedMode(r.direction) ? 'toets-tag' : 'dim'}>
+                      {directionLabel(r.direction)}
+                    </span>
                   </div>
                   <div className="board-stat">
                     {r.accuracy}% &middot; {fmtTime(r.timeSeconds)}

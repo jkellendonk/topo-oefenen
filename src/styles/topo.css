@@ -123,6 +123,27 @@ body{
 .dir-btn:hover{ transform:translateY(-2px); }
 .dir-btn.active{ border-color:var(--teal); background:#DCEEFB; }
 
+/* "Toets" (exam) practice form: styled to stand apart from the multiple-choice buttons above */
+.toets-btn{
+  width:100%; display:flex; align-items:center; gap:10px; text-align:left;
+  background:#FFF6F1; border:3px dashed var(--orange); border-radius:16px;
+  padding:14px 16px; margin-bottom:10px; font-family:'Nunito'; font-weight:800; font-size:14px;
+  color:var(--navy); cursor:pointer; transition:transform .15s ease, background .15s ease; min-height:44px;
+}
+.toets-btn:hover{ transform:translateY(-2px); }
+.toets-btn.active{ border-style:solid; background:#FFE7DC; }
+.toets-hint{
+  background:#FFF6F1; border:2px solid #FFDCC7; border-radius:14px;
+  padding:10px 14px; margin:0 0 20px !important; font-size:13px !important;
+}
+.toets-pill{
+  display:inline-block; flex-shrink:0; background:var(--orange); color:#fff;
+  font-family:'Patrick Hand',cursive; font-weight:700; font-size:12px; letter-spacing:.5px;
+  padding:4px 11px; border-radius:999px;
+}
+.toets-pill-header{ align-self:center; }
+.toets-tag{ color:var(--orange); font-weight:800; }
+
 .start-btn{
   width:100%; background:var(--orange); color:white; border:none;
   padding:18px; border-radius:18px; font-family:'Patrick Hand'; font-weight:700;
@@ -193,6 +214,13 @@ body{
 .prompt-label{ font-size:12.5px; letter-spacing:1px; font-weight:800; text-transform:uppercase; opacity:.85; position:relative; }
 .prompt-word{ font-family:'Patrick Hand',cursive; font-size:clamp(32px,8vw,46px); font-weight:800; margin-top:6px; position:relative; }
 
+/* Toets (exam) prompt: warm orange/red gradient instead of teal, so it visually reads as "this counts" */
+.prompt-card-toets{
+  background:linear-gradient(155deg, var(--orange), #B23029);
+  box-shadow:0 1px 2px rgba(178,48,41,0.3),0 14px 0 #7E211C,0 26px 48px -16px rgba(178,48,41,0.5);
+}
+.prompt-card-toets .prompt-word{ font-size:clamp(24px,5.5vw,32px); }
+
 .options-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:20px 0; }
 .option-btn{
   background:var(--card); border:3px solid #DCE8E2; border-radius:16px;
@@ -204,6 +232,26 @@ body{
 .option-btn.wrong{ border-color:var(--coral); background:#FFEFEF; }
 .option-btn.disabled{ opacity:.5; }
 .option-btn:disabled{ cursor:default; }
+
+.answer-row{ display:flex; flex-wrap:wrap; gap:10px; margin:20px 0; }
+.answer-row input{
+  flex:1 1 200px; font-family:'Nunito'; font-weight:700; font-size:19px;
+  padding:16px 18px; border-radius:16px; border:3px solid #DCE8E2;
+  outline:none; color:var(--navy); background:var(--card); min-height:44px;
+  transition:border-color .15s ease, background .15s ease;
+}
+.answer-row input:focus{ border-color:var(--orange); }
+.answer-row input.correct{ border-color:var(--mint); background:#EAFBF5; }
+.answer-row input.wrong{ border-color:var(--coral); background:#FFEFEF; }
+.answer-row input:disabled{ opacity:.85; }
+.check-btn{
+  background:var(--orange); color:white; border:none; padding:0 26px;
+  border-radius:16px; font-family:'Patrick Hand'; font-weight:700; font-size:16px;
+  cursor:pointer; box-shadow:0 5px 0 #B23029; transition:transform .15s ease; min-height:44px;
+}
+.check-btn:hover:not(:disabled){ transform:translateY(-2px); }
+.check-btn:active{ transform:translateY(2px); box-shadow:0 2px 0 #B23029; }
+.check-btn:disabled{ opacity:.4; cursor:default; }
 
 .msg{
   text-align:center; font-weight:800; font-family:'Patrick Hand'; font-size:16.5px;
@@ -234,6 +282,7 @@ body{
 .result-hero{ text-align:center; padding:8px 0 22px; }
 .stars{ font-size:48px; letter-spacing:8px; margin-bottom:8px; filter:drop-shadow(0 4px 10px rgba(255,201,60,0.4)); }
 .result-title{ font-family:'Patrick Hand'; font-size:24px; font-weight:800; }
+.result-title + .toets-pill{ margin-top:8px; }
 .result-sub{ color:#6E8378; font-weight:700; font-size:14px; margin-top:4px; }
 
 .metric-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:20px 0; }

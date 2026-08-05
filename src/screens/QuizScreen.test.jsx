@@ -154,3 +154,64 @@ describe('QuizScreen', () => {
     expect(sound.playFinish).toHaveBeenCalledTimes(1)
   })
 })
+
+describe('QuizScreen — toets (typed) mode', () => {
+  it('shows a "Waar ligt ...?" question, a text input, and a TOETS badge instead of multiple choice', () => {
+    renderQuiz({ direction: 'toets' })
+    expect(screen.getByText('Waar ligt IJsland?')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText(/typ hier/)).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Noorwegen' })).not.toBeInTheDocument()
+    expect(screen.getAllByText('📝 TOETS').length).toBeGreaterThan(0)
+  })
+
+  it('a correct typed answer (case/whitespace-insensitive) advances automatically', () => {
+    renderQuiz({ direction: 'toets' })
+
+    const input = screen.getByPlaceholderText(/typ hier/)
+    fireEvent.change(input, { target: { value: '  1  ' } })
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'Controleer' }))
+    })
+    expect(input).toHaveClass('correct')
+    expect(input).toBeDisabled()
+
+    act(() => {
+      vi.advanceTimersByTime(700)
+    })
+    expect(screen.getByText('Waar ligt Noorwegen?')).toBeInTheDocument()
+  })
+
+  it('a wrong typed answer shows the correct code and requires Volgende', () => {
+    renderQuiz({ direction: 'toets' })
+
+    const input = screen.getByPlaceholderText(/typ hier/)
+    fireEvent.change(input, { target: { value: '99' } })
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'Controleer' }))
+    })
+    expect(input).toHaveClass('wrong')
+    expect(screen.getByText(/Het juiste antwoord is/)).toBeInTheDocument()
+    expect(screen.getByText('1')).toBeInTheDocument()
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: /Volgende/ }))
+    })
+    expect(screen.getByText('Waar ligt Noorwegen?')).toBeInTheDocument()
+  })
+
+  it('pressing Enter submits the typed answer', () => {
+    renderQuiz({ direction: 'toets' })
+
+    const input = screen.getByPlaceholderText(/typ hier/)
+    fireEvent.change(input, { target: { value: '1' } })
+    act(() => {
+      fireEvent.keyDown(document, { key: 'Enter' })
+    })
+    expect(input).toHaveClass('correct')
+  })
+
+  it('the Controleer button stays disabled until something is typed', () => {
+    renderQuiz({ direction: 'toets' })
+    expect(screen.getByRole('button', { name: 'Controleer' })).toBeDisabled()
+  })
+})

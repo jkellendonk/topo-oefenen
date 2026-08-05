@@ -61,4 +61,14 @@ describe('ResultScreen', () => {
     await screen.findByText('Landen van Europa', { exact: false })
     expect(screen.queryByText(/Nieuw persoonlijk record/)).not.toBeInTheDocument()
   })
+
+  it('shows a TOETS badge when the result came from the typed toets mode', () => {
+    renderResult({ direction: 'toets' })
+    expect(screen.getByText('📝 TOETS')).toBeInTheDocument()
+  })
+
+  it('does not show a TOETS badge for the multiple-choice directions', () => {
+    renderResult({ direction: 'code-name' })
+    expect(screen.queryByText('📝 TOETS')).not.toBeInTheDocument()
+  })
 })

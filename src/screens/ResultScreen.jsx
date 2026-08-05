@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import Header from '../components/Header.jsx'
-import { fmtTime } from '../utils.js'
+import { fmtTime, isTypedMode } from '../utils.js'
 import { getScores, postScore } from '../api.js'
 
 function ResultScreen({ pack, direction, playerName, result, sound, onPlayAgain, onChangePack, onOpenBoard }) {
@@ -65,6 +65,7 @@ function ResultScreen({ pack, direction, playerName, result, sound, onPlayAgain,
             {'☆'.repeat(3 - result.stars)}
           </div>
           <div className="result-title">Kaart "{pack.title}" voltooid!</div>
+          {isTypedMode(direction) && <span className="toets-pill">📝 TOETS</span>}
           <div className="result-sub">{praise}</div>
         </div>
 

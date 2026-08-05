@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import BoardScreen from './BoardScreen.jsx'
 import { getScores } from '../api.js'
@@ -63,5 +63,23 @@ describe('BoardScreen', () => {
     renderBoard()
     await screen.findByText('👤 Sam')
     expect(screen.getByText(/▲ 30%/)).toBeInTheDocument()
+  })
+
+  it('marks toets-mode rows with a distinct "toets-tag" label instead of the plain dim tag', async () => {
+    getScores.mockResolvedValue([
+      {
+        id: 1,
+        playerName: 'Sam',
+        packId: 'rivieren_van_europa',
+        direction: 'toets',
+        accuracy: 70,
+        timeSeconds: 60,
+        createdAt: '2026-01-01T00:00:00.000Z',
+        pack: { title: 'Rivieren van Europa' },
+      },
+    ])
+    renderBoard()
+    const label = await screen.findByText('📝 Toets (zelf typen)')
+    expect(label).toHaveClass('toets-tag')
   })
 })

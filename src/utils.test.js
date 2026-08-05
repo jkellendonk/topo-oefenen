@@ -7,6 +7,8 @@ import {
   promptLabel,
   directionLabel,
   buildOptions,
+  isTypedMode,
+  normalize,
 } from './utils.js'
 
 describe('shuffle', () => {
@@ -56,6 +58,7 @@ describe('promptValue / answerValue', () => {
 describe('promptLabel', () => {
   it('has a distinct label per direction', () => {
     expect(promptLabel('code-name')).not.toBe(promptLabel('name-code'))
+    expect(promptLabel('toets')).not.toBe(promptLabel('name-code'))
   })
 })
 
@@ -66,6 +69,35 @@ describe('directionLabel', () => {
 
   it('describes name-code', () => {
     expect(directionLabel('name-code')).toBe('Naam ➜ Cijfer/letter')
+  })
+
+  it('describes toets', () => {
+    expect(directionLabel('toets')).toBe('📝 Toets (zelf typen)')
+  })
+})
+
+describe('isTypedMode', () => {
+  it('is true only for toets', () => {
+    expect(isTypedMode('toets')).toBe(true)
+    expect(isTypedMode('code-name')).toBe(false)
+    expect(isTypedMode('name-code')).toBe(false)
+  })
+})
+
+describe('normalize', () => {
+  it('trims and lowercases', () => {
+    expect(normalize('  Duitsland  ')).toBe('duitsland')
+  })
+
+  it('leaves an already-normalized string unchanged', () => {
+    expect(normalize('14')).toBe('14')
+  })
+})
+
+describe('toets: promptValue / answerValue', () => {
+  it('asks "Waar ligt <place>?" and expects the code typed in', () => {
+    expect(promptValue(question, 'toets')).toBe('Waar ligt Nederland?')
+    expect(answerValue(question, 'toets')).toBe('15')
   })
 })
 
