@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import Header from '../components/Header.jsx'
-import { getPacks } from '../api.js'
+import { getPacks, GROUPS } from '../api.js'
 
 function StartScreen({
   sound,
   playerName,
   setPlayerName,
+  group,
+  setGroup,
   direction,
   setDirection,
   packId,
@@ -16,12 +18,13 @@ function StartScreen({
   const [packs, setPacks] = useState([])
 
   useEffect(() => {
-    getPacks().then((data) => {
+    setPackId(null)
+    getPacks(group).then((data) => {
       setPacks(data)
-      if (data.length > 0 && !packId) setPackId(data[0].id)
+      if (data.length > 0) setPackId(data[0].id)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [group])
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -33,7 +36,7 @@ function StartScreen({
       <Header soundEnabled={sound.enabled} onToggleSound={sound.toggle} />
       <div className="panel">
         <h2>Wie gaat er oefenen?</h2>
-        <p className="sub">Vul je naam in, kies een kaart en een oefenvorm om te starten</p>
+        <p className="sub">Vul je naam in, kies een groep, een kaart en een oefenvorm om te starten</p>
         <form onSubmit={handleSubmit}>
           <label htmlFor="nameInput">Naam</label>
           <input
@@ -45,19 +48,37 @@ function StartScreen({
             onChange={(e) => setPlayerName(e.target.value)}
           />
 
-          <label>Kies een kaart</label>
-          <div className="pack-grid">
-            {packs.map((p) => (
-              <div
-                key={p.id}
-                className={`pack-card ${p.id === packId ? 'active' : ''}`}
-                onClick={() => setPackId(p.id)}
+          <label>Groep</label>
+          <div className="dir-toggle">
+            {GROUPS.map((g) => (
+              <button
+                key={g}
+                type="button"
+                className={`dir-btn ${group === g ? 'active' : ''}`}
+                onClick={() => setGroup(g)}
               >
-                <div className="pname">{p.title}</div>
-                <div className="pcount">{p.count} items</div>
-              </div>
+                {g}
+              </button>
             ))}
           </div>
+
+          <label>Kies een kaart</label>
+          {packs.length === 0 ? (
+            <p className="sub">Nog geen kaarten voor {group}. Kies een andere groep.</p>
+          ) : (
+            <div className="pack-grid">
+              {packs.map((p) => (
+                <div
+                  key={p.id}
+                  className={`pack-card ${p.id === packId ? 'active' : ''}`}
+                  onClick={() => setPackId(p.id)}
+                >
+                  <div className="pname">{p.title}</div>
+                  <div className="pcount">{p.count} items</div>
+                </div>
+              ))}
+            </div>
+          )}
 
           <label>Oefenvorm</label>
           <div className="dir-toggle">

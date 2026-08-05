@@ -15,10 +15,18 @@ import zeeenEnMerenEuropaImage from './zeeen_en_meren_europa.webp'
 const IMAGE_WIDTH = 1152
 const IMAGE_HEIGHT = 1536
 
+export const GROUPS = ['Groep 7', 'Groep 8']
+
 export const TOPO_PACKS = [
-  { id: 'landen_europa', data: landenEuropaData, image: landenEuropaImage },
-  { id: 'hoofdsteden_europa', data: hoofdstedenEuropaData, image: hoofdstedenEuropaImage },
-  { id: 'rivieren_van_europa', data: rivierenVanEuropaData, image: rivierenVanEuropaImage },
-  { id: 'gebergten_en_wateren_europa', data: gebergtenEnWaterenEuropaData, image: gebergtenEnWaterenEuropaImage },
-  { id: 'zeeen_en_meren_europa', data: zeeenEnMerenEuropaData, image: zeeenEnMerenEuropaImage },
+  { id: 'landen_europa', data: landenEuropaData, image: landenEuropaImage, group: 'Groep 7' },
+  { id: 'hoofdsteden_europa', data: hoofdstedenEuropaData, image: hoofdstedenEuropaImage, group: 'Groep 7' },
+  { id: 'rivieren_van_europa', data: rivierenVanEuropaData, image: rivierenVanEuropaImage, group: 'Groep 7' },
+  {
+    id: 'gebergten_en_wateren_europa',
+    data: gebergtenEnWaterenEuropaData,
+    image: gebergtenEnWaterenEuropaImage,
+    group: 'Groep 7',
+  },
+  { id: 'zeeen_en_meren_europa', data: zeeenEnMerenEuropaData, image: zeeenEnMerenEuropaImage, group: 'Groep 7' },
+  // Groep 8 kaarten volgen nog.
 ].map((pack) => ({ ...pack, imageWidth: IMAGE_WIDTH, imageHeight: IMAGE_HEIGHT }))

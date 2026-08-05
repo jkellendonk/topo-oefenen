@@ -16,6 +16,26 @@ test('shows the app title and all 5 map packs by default', async ({ page }) => {
     await expect(page.locator('.pack-card .pname', { hasText: title })).toBeVisible()
   }
   await expect(page.locator('.dir-btn', { hasText: 'Cijfer/letter ➜ Naam' })).toHaveClass(/active/)
+  await expect(page.locator('.dir-btn', { hasText: 'Groep 7' })).toHaveClass(/active/)
+})
+
+test('Groep 8 shows an empty state and disables the start button', async ({ page }) => {
+  await page.goto('/')
+  await page.locator('.dir-btn', { hasText: 'Groep 8' }).click()
+
+  await expect(page.locator('.pack-card')).toHaveCount(0)
+  await expect(page.getByText(/Nog geen kaarten voor Groep 8/)).toBeVisible()
+  await expect(page.locator('.start-btn')).toBeDisabled()
+})
+
+test('switching back to Groep 7 restores its map packs', async ({ page }) => {
+  await page.goto('/')
+  await page.locator('.dir-btn', { hasText: 'Groep 8' }).click()
+  await expect(page.locator('.pack-card')).toHaveCount(0)
+
+  await page.locator('.dir-btn', { hasText: 'Groep 7' }).click()
+  await expect(page.locator('.pack-card .pname', { hasText: 'Landen van Europa' })).toBeVisible()
+  await expect(page.locator('.start-btn')).toBeEnabled()
 })
 
 test('switching direction toggles the active button', async ({ page }) => {

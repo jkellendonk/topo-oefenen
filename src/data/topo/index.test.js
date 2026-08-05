@@ -1,9 +1,19 @@
 import { describe, it, expect } from 'vitest'
-import { TOPO_PACKS } from './index.js'
+import { TOPO_PACKS, GROUPS } from './index.js'
 
 describe('TOPO_PACKS', () => {
   it('has exactly 5 map packs', () => {
     expect(TOPO_PACKS).toHaveLength(5)
+  })
+
+  it('every pack belongs to a known group', () => {
+    for (const pack of TOPO_PACKS) {
+      expect(GROUPS).toContain(pack.group)
+    }
+  })
+
+  it('all current packs are Groep 7 — Groep 8 is still empty and waiting to be filled in', () => {
+    expect(TOPO_PACKS.every((p) => p.group === 'Groep 7')).toBe(true)
   })
 
   it('has unique ids', () => {

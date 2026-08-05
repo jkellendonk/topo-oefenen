@@ -6,9 +6,10 @@ import { getPacks } from '../api.js'
 
 vi.mock('../api.js', () => ({
   getPacks: vi.fn(),
+  GROUPS: ['Groep 7', 'Groep 8'],
 }))
 
-const packs = [
+const groep7Packs = [
   { id: 'landen_europa', title: 'Landen van Europa', count: 45 },
   { id: 'hoofdsteden_europa', title: 'Hoofdsteden van Europa', count: 45 },
 ]
@@ -18,6 +19,8 @@ function setup(overrides = {}) {
     sound: { enabled: true, toggle: vi.fn() },
     playerName: '',
     setPlayerName: vi.fn(),
+    group: 'Groep 7',
+    setGroup: vi.fn(),
     direction: 'code-name',
     setDirection: vi.fn(),
     packId: null,
@@ -31,7 +34,7 @@ function setup(overrides = {}) {
 }
 
 beforeEach(() => {
-  getPacks.mockResolvedValue(packs)
+  getPacks.mockImplementation((group) => Promise.resolve(group === 'Groep 7' ? groep7Packs : []))
 })
 
 describe('StartScreen', () => {
@@ -40,6 +43,12 @@ describe('StartScreen', () => {
     expect(await screen.findByText('Landen van Europa')).toBeInTheDocument()
     expect(screen.getByText('Hoofdsteden van Europa')).toBeInTheDocument()
     expect(screen.getAllByText('45 items')).toHaveLength(2)
+  })
+
+  it('fetches packs for the given group', async () => {
+    setup()
+    await screen.findByText('Landen van Europa')
+    expect(getPacks).toHaveBeenCalledWith('Groep 7')
   })
 
   it('auto-selects the first pack once loaded', async () => {
@@ -104,5 +113,25 @@ describe('StartScreen', () => {
   it('does not show the toets hint for the multiple-choice directions', async () => {
     setup({ direction: 'code-name' })
     expect(screen.queryByText(/Waar ligt Duitsland/)).not.toBeInTheDocument()
+  })
+
+  it('shows Groep 7 and Groep 8 as group choices, with Groep 7 active by default', () => {
+    setup()
+    expect(screen.getByText('Groep 7')).toHaveClass('active')
+    expect(screen.getByText('Groep 8')).not.toHaveClass('active')
+  })
+
+  it('switching to Groep 8 calls setGroup', async () => {
+    const user = userEvent.setup()
+    const setGroup = vi.fn()
+    setup({ setGroup })
+    await user.click(screen.getByText('Groep 8'))
+    expect(setGroup).toHaveBeenCalledWith('Groep 8')
+  })
+
+  it('Groep 8 shows an empty state and disables the start button until it has packs', async () => {
+    setup({ group: 'Groep 8' })
+    expect(await screen.findByText(/Nog geen kaarten voor Groep 8/)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Start!/ })).toBeDisabled()
   })
 })

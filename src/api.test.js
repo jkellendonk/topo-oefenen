@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { getPacks, getPack, getScores, postScore } from './api.js'
+import { getPacks, getPack, getScores, postScore, GROUPS } from './api.js'
 import { TOPO_PACKS } from './data/topo/index.js'
 
 beforeEach(() => {
@@ -7,15 +7,32 @@ beforeEach(() => {
 })
 
 describe('getPacks', () => {
-  it('returns all 5 map packs with a count', async () => {
-    const packs = await getPacks()
+  it('returns all 5 Groep 7 map packs with a count', async () => {
+    const packs = await getPacks('Groep 7')
+    const expectedIds = TOPO_PACKS.filter((p) => p.group === 'Groep 7').map((p) => p.id)
     expect(packs).toHaveLength(5)
-    expect(packs.map((p) => p.id).sort()).toEqual([...TOPO_PACKS.map((p) => p.id)].sort())
+    expect(packs.map((p) => p.id).sort()).toEqual([...expectedIds].sort())
     for (const pack of packs) {
       const entry = TOPO_PACKS.find((p) => p.id === pack.id)
       expect(pack.count).toBe(entry.data.questions.length)
       expect(pack.title).toBe(entry.data.meta.title)
     }
+  })
+
+  it('returns an empty list for Groep 8 until it is filled in', async () => {
+    const packs = await getPacks('Groep 8')
+    expect(packs).toEqual([])
+  })
+
+  it('returns an empty list for an unknown group', async () => {
+    const packs = await getPacks('Groep 12')
+    expect(packs).toEqual([])
+  })
+})
+
+describe('GROUPS', () => {
+  it('exposes Groep 7 and Groep 8', () => {
+    expect(GROUPS).toEqual(['Groep 7', 'Groep 8'])
   })
 })
 

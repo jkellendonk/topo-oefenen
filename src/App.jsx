@@ -18,6 +18,7 @@ function App() {
   const [screen, setScreen] = useState('start')
   const [playerName, setPlayerName] = useState('')
   const [activePlayerName, setActivePlayerName] = useState('Speler')
+  const [group, setGroup] = useState('Groep 7')
   const [direction, setDirection] = useState('code-name')
   const [packId, setPackId] = useState(null)
   const [pack, setPack] = useState(null)
@@ -58,6 +59,8 @@ function App() {
           sound={sound}
           playerName={playerName}
           setPlayerName={setPlayerName}
+          group={group}
+          setGroup={setGroup}
           direction={direction}
           setDirection={setDirection}
           packId={packId}

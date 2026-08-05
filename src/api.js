@@ -1,6 +1,8 @@
-import { TOPO_PACKS } from './data/topo/index.js'
+import { TOPO_PACKS, GROUPS } from './data/topo/index.js'
 
 const SCORES_KEY = 'topo-oefenen-scores-v1'
+
+export { GROUPS }
 
 function findPack(id) {
   const entry = TOPO_PACKS.find((p) => p.id === id)
@@ -29,9 +31,9 @@ function writeScores(scores) {
   localStorage.setItem(SCORES_KEY, JSON.stringify(scores))
 }
 
-export function getPacks() {
+export function getPacks(group) {
   return Promise.resolve(
-    TOPO_PACKS.map((p) => ({
+    TOPO_PACKS.filter((p) => p.group === group).map((p) => ({
       id: p.id,
       title: p.data.meta.title,
       count: p.data.questions.length,
