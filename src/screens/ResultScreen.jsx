@@ -24,7 +24,9 @@ function ResultScreen({ pack, direction, playerName, result, sound, onPlayAgain,
         (result.accuracy === priorBest.accuracy && result.timeSeconds < priorBest.timeSeconds)
       setIsRecord(record)
 
-      await postScore({ playerName, packId: pack.id, direction, ...result })
+      // `missed` is only for the on-screen review below; keep stored score records lean.
+      const { missed: _missed, ...scoreFields } = result
+      await postScore({ playerName, packId: pack.id, direction, ...scoreFields })
 
       const allScores = await getScores()
       setTop5(
@@ -89,6 +91,18 @@ function ResultScreen({ pack, direction, playerName, result, sound, onPlayAgain,
             <div className="mlabel">Langste reeks</div>
           </div>
         </div>
+
+        {result.missed && result.missed.length > 0 && (
+          <div className="board" style={{ marginBottom: 20 }}>
+            <div className="board-title">🔍 Nog even oefenen</div>
+            {result.missed.map((m, i) => (
+              <div className="board-row" key={i}>
+                <div className="board-name">{m.place}</div>
+                <div className="board-stat">{m.answer}</div>
+              </div>
+            ))}
+          </div>
+        )}
 
         <div className="board">
           <div className="board-title">🏅 Beste rondes</div>

@@ -3,6 +3,7 @@ import { render, screen, act, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from './App.jsx'
 import rivierenData from './data/topo/rivieren_van_europa.json'
+import { saveQuizSession, loadQuizSession } from './sessionStore.js'
 
 // answer (code shown as the prompt in the default "code-name" direction) -> place (the correct button label)
 const RIVIEREN_ANSWER_TO_PLACE = Object.fromEntries(
@@ -11,6 +12,7 @@ const RIVIEREN_ANSWER_TO_PLACE = Object.fromEntries(
 
 beforeEach(() => {
   localStorage.clear()
+  sessionStorage.clear()
 })
 
 describe('App', () => {
@@ -56,7 +58,7 @@ describe('App', () => {
         const shownCode = document.querySelector('.prompt-word').textContent
         const correctPlace = RIVIEREN_ANSWER_TO_PLACE[shownCode]
         const options = [...document.querySelectorAll('.option-btn')]
-        const correctBtn = options.find((o) => o.textContent === correctPlace)
+        const correctBtn = options.find((o) => o.querySelector('.option-label').textContent === correctPlace)
         act(() => {
           fireEvent.click(correctBtn)
         })
@@ -80,5 +82,47 @@ describe('App', () => {
     await user.click(screen.getByText(/Volledig scorebord/))
     expect(screen.getByText('👤 Robin')).toBeInTheDocument()
     expect(screen.getByText('Rivieren van Europa')).toBeInTheDocument()
+  })
+
+  it('resumes an in-progress quiz straight into the quiz screen on mount', async () => {
+    saveQuizSession({
+      packId: 'rivieren_van_europa',
+      direction: 'code-name',
+      playerName: 'Robin',
+      elapsedSeconds: 12,
+      quizState: {
+        queue: [1, 2, 3],
+        activeIndex: 1,
+        mastered: [0],
+        struggling: [],
+        missed: [],
+        mistakes: 0,
+        firstTryCorrect: 1,
+        attemptedFirstTime: [0],
+        streak: 1,
+        bestStreak: 1,
+      },
+    })
+
+    render(<App />)
+
+    expect(await screen.findByText(/Robin/)).toBeInTheDocument()
+    expect(document.querySelector('.prompt-word')).toBeInTheDocument()
+    expect(screen.getByText('1 / 13 onder de knie', { exact: false })).toBeInTheDocument()
+  })
+
+  it('discards a stale session pointing at a pack that no longer resolves', async () => {
+    saveQuizSession({
+      packId: 'does-not-exist',
+      direction: 'code-name',
+      playerName: 'Robin',
+      elapsedSeconds: 0,
+      quizState: { queue: [0], activeIndex: 0, mastered: [], struggling: [], missed: [], mistakes: 0, firstTryCorrect: 0, attemptedFirstTime: [], streak: 0, bestStreak: 0 },
+    })
+
+    render(<App />)
+
+    expect(await screen.findByLabelText('Naam')).toBeInTheDocument()
+    await waitFor(() => expect(loadQuizSession()).toBeNull())
   })
 })

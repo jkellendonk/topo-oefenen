@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, within, act, fireEvent } from '@testing-library/react'
 import QuizScreen from './QuizScreen.jsx'
+import { loadQuizSession } from '../sessionStore.js'
 
 vi.mock('../utils.js', async (importOriginal) => {
   const actual = await importOriginal()
@@ -53,6 +54,7 @@ function renderQuiz(overrides = {}) {
 
 beforeEach(() => {
   vi.useFakeTimers()
+  sessionStorage.clear()
 })
 
 afterEach(() => {
@@ -63,12 +65,17 @@ describe('QuizScreen', () => {
   it('shows the map image, the prompt and 4 unique answer options', () => {
     renderQuiz()
     expect(screen.getByRole('img', { name: 'Landen van Europa' })).toHaveAttribute('src', 'test.jpeg')
-    expect(screen.getByText('1')).toBeInTheDocument() // prompt-word for the first (identity-shuffled) question
+    // prompt-word for the first (identity-shuffled) question; scoped since the option-key
+    // hint badges always show "1"-"4" too, regardless of which question is active.
+    expect(screen.getByText('1', { selector: '.prompt-word' })).toBeInTheDocument()
     const options = screen.getByText('IJsland').closest('.options-grid').querySelectorAll('.option-btn')
     expect(options).toHaveLength(4)
-    const labels = [...options].map((o) => o.textContent)
+    const labels = [...options].map((o) => o.querySelector('.option-label').textContent)
     expect(new Set(labels).size).toBe(4)
     expect(labels).toContain('IJsland')
+    // Each option is hinted with its 1-4 keyboard shortcut (hidden from the accessible name).
+    const keyHints = [...options].map((o) => o.querySelector('.option-key').textContent)
+    expect(keyHints).toEqual(['1', '2', '3', '4'])
   })
 
   it('a correct answer shows positive feedback, grows the streak, and auto-advances', () => {
@@ -84,7 +91,7 @@ describe('QuizScreen', () => {
       vi.advanceTimersByTime(700)
     })
     // Advanced to the next (identity-shuffled) question: Noorwegen / "2"
-    expect(screen.getByText('2')).toBeInTheDocument()
+    expect(screen.getByText('2', { selector: '.prompt-word' })).toBeInTheDocument()
   })
 
   it('a wrong answer shows the correct answer and requires the Volgende button', () => {
@@ -94,7 +101,11 @@ describe('QuizScreen', () => {
     // distractor set is randomized, so pick whichever option isn't the correct one.
     const wrongOption = screen
       .getAllByRole('button')
-      .find((btn) => btn.classList.contains('option-btn') && btn.textContent !== 'IJsland')
+      .find(
+        (btn) =>
+          btn.classList.contains('option-btn') &&
+          btn.querySelector('.option-label').textContent !== 'IJsland'
+      )
     act(() => {
       fireEvent.click(wrongOption)
     })
@@ -107,7 +118,7 @@ describe('QuizScreen', () => {
     act(() => {
       fireEvent.click(nextBtn)
     })
-    expect(screen.getByText('2')).toBeInTheDocument()
+    expect(screen.getByText('2', { selector: '.prompt-word' })).toBeInTheDocument()
   })
 
   it('clicking "Hoofdmenu" opens a styled confirm modal instead of a native confirm', () => {
@@ -152,6 +163,127 @@ describe('QuizScreen', () => {
       expect.objectContaining({ accuracy: 100, mistakes: 0, stars: 3 })
     )
     expect(sound.playFinish).toHaveBeenCalledTimes(1)
+  })
+
+  it('pressing a number key (1-4) selects the matching multiple-choice option', () => {
+    renderQuiz()
+
+    const options = [...document.querySelectorAll('.option-btn')]
+    const secondLabel = options[1].querySelector('.option-label').textContent
+    act(() => {
+      fireEvent.keyDown(document, { key: '2' })
+    })
+    expect(screen.getByText(secondLabel).closest('.option-btn')).toHaveClass(
+      secondLabel === 'IJsland' ? 'correct' : 'wrong'
+    )
+  })
+
+  it('reports every ever-missed question in onFinish, even after it was later mastered', () => {
+    const { onFinish } = renderQuiz()
+
+    // Answer the first (IJsland) question wrong, then correctly on retry, then finish the rest correctly.
+    const wrongOption = screen
+      .getAllByRole('button')
+      .find(
+        (btn) =>
+          btn.classList.contains('option-btn') &&
+          btn.querySelector('.option-label').textContent !== 'IJsland'
+      )
+    act(() => {
+      fireEvent.click(wrongOption)
+    })
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: /Volgende/ }))
+    })
+
+    const correctByPrompt = { 1: 'IJsland', 2: 'Noorwegen', 3: 'Zweden', 4: 'Finland', 5: 'Ierland', 6: 'Schotland' }
+    while (!onFinish.mock.calls.length) {
+      const shown = document.querySelector('.prompt-word').textContent
+      act(() => {
+        fireEvent.click(screen.getByRole('button', { name: correctByPrompt[shown] }))
+      })
+      act(() => {
+        vi.advanceTimersByTime(700)
+      })
+    }
+
+    expect(onFinish).toHaveBeenCalledWith(
+      expect.objectContaining({ missed: [{ place: 'IJsland', answer: '1' }] })
+    )
+  })
+
+  it('persists progress to sessionStorage after every answer, and clears it once finished', () => {
+    renderQuiz()
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'IJsland' }))
+    })
+    let saved = loadQuizSession()
+    expect(saved.packId).toBe('test_pack')
+    expect(saved.quizState.mastered).toEqual([0])
+
+    act(() => {
+      vi.advanceTimersByTime(700)
+    })
+    saved = loadQuizSession()
+    expect(saved.quizState.activeIndex).toBe(1)
+
+    const correctByPrompt = { 1: 'IJsland', 2: 'Noorwegen', 3: 'Zweden', 4: 'Finland', 5: 'Ierland', 6: 'Schotland' }
+    while (loadQuizSession()) {
+      const shown = document.querySelector('.prompt-word')?.textContent
+      if (!shown) break
+      act(() => {
+        fireEvent.click(screen.getByRole('button', { name: correctByPrompt[shown] }))
+      })
+      act(() => {
+        vi.advanceTimersByTime(700)
+      })
+    }
+    expect(loadQuizSession()).toBeNull()
+  })
+
+  it('clears the saved session when the player confirms stopping via the Hoofdmenu modal', () => {
+    renderQuiz()
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'IJsland' }))
+    })
+    expect(loadQuizSession()).not.toBeNull()
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: /Hoofdmenu/ }))
+    })
+    act(() => {
+      fireEvent.click(screen.getByText('Ja, stoppen'))
+    })
+    expect(loadQuizSession()).toBeNull()
+  })
+
+  it('resumes from a resumeSession snapshot instead of starting fresh', () => {
+    renderQuiz({
+      resumeSession: {
+        packId: pack.id,
+        direction: 'code-name',
+        playerName: 'Sam',
+        elapsedSeconds: 42,
+        quizState: {
+          queue: [1, 2, 3, 4, 5],
+          activeIndex: 1,
+          mastered: [0],
+          struggling: [],
+          missed: [],
+          mistakes: 0,
+          firstTryCorrect: 1,
+          attemptedFirstTime: [0],
+          streak: 1,
+          bestStreak: 1,
+        },
+      },
+    })
+
+    // Noorwegen's code — the resumed active question
+    expect(screen.getByText('2', { selector: '.prompt-word' })).toBeInTheDocument()
+    expect(screen.getByText('1 / 6 onder de knie', { exact: false })).toBeInTheDocument()
+    expect(screen.getByText('0:42', { exact: false })).toBeInTheDocument()
   })
 })
 

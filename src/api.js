@@ -10,6 +10,8 @@ function findPack(id) {
     title: entry.data.meta.title,
     description: entry.data.meta.description,
     image: entry.image,
+    imageWidth: entry.imageWidth,
+    imageHeight: entry.imageHeight,
     questions: entry.data.questions.map((q, i) => ({ id: i, place: q.place, answer: q.answer })),
   }
 }

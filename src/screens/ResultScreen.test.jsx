@@ -71,4 +71,26 @@ describe('ResultScreen', () => {
     renderResult({ direction: 'code-name' })
     expect(screen.queryByText('📝 TOETS')).not.toBeInTheDocument()
   })
+
+  it('shows a "Nog even oefenen" review list when the round had missed items', () => {
+    renderResult({
+      result: { ...result, missed: [{ place: 'Duitsland', answer: '14' }, { place: 'Polen', answer: '19' }] },
+    })
+    expect(screen.getByText('🔍 Nog even oefenen')).toBeInTheDocument()
+    expect(screen.getByText('Duitsland')).toBeInTheDocument()
+    expect(screen.getByText('14')).toBeInTheDocument()
+    expect(screen.getByText('Polen')).toBeInTheDocument()
+  })
+
+  it('does not show the review section when nothing was missed', () => {
+    renderResult({ result: { ...result, missed: [] } })
+    expect(screen.queryByText('🔍 Nog even oefenen')).not.toBeInTheDocument()
+  })
+
+  it('never sends the ephemeral "missed" list to score storage', async () => {
+    renderResult({ result: { ...result, missed: [{ place: 'Duitsland', answer: '14' }] } })
+    await screen.findByText(/Nieuw persoonlijk record/)
+    const [savedScore] = postScore.mock.calls[0]
+    expect(savedScore.missed).toBeUndefined()
+  })
 })

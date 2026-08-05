@@ -11,8 +11,10 @@ import {
   isTypedMode,
   normalize,
 } from '../utils.js'
+import { saveQuizSession, clearQuizSession } from '../sessionStore.js'
 
 const PRAISE = ['Goed zo!', 'Top!', 'Knap gedaan!', 'Yes!']
+const OPTION_KEYS = ['1', '2', '3', '4']
 
 export function initialQuizState(pack) {
   const queue = shuffle(pack.questions.map((q) => q.id))
@@ -21,11 +23,35 @@ export function initialQuizState(pack) {
     activeIndex: queue[0],
     mastered: new Set(),
     struggling: new Set(),
+    missed: new Set(),
     mistakes: 0,
     firstTryCorrect: 0,
     attemptedFirstTime: new Set(),
     streak: 0,
     bestStreak: 0,
+    justHitMilestone: false,
+    answered: false,
+    lastResult: null,
+    selectedValue: null,
+    message: '',
+    finished: false,
+  }
+}
+
+// Rebuilds reducer state from a sessionStorage snapshot (see sessionStore.js),
+// so a refreshed page can pick a round back up mid-way through.
+export function hydrateQuizState(quizState) {
+  return {
+    queue: quizState.queue,
+    activeIndex: quizState.activeIndex,
+    mastered: new Set(quizState.mastered),
+    struggling: new Set(quizState.struggling),
+    missed: new Set(quizState.missed),
+    mistakes: quizState.mistakes,
+    firstTryCorrect: quizState.firstTryCorrect,
+    attemptedFirstTime: new Set(quizState.attemptedFirstTime),
+    streak: quizState.streak,
+    bestStreak: quizState.bestStreak,
     justHitMilestone: false,
     answered: false,
     lastResult: null,
@@ -70,6 +96,7 @@ export function reducer(state, action) {
         selectedValue,
         mistakes: state.mistakes + 1,
         struggling: new Set(state.struggling).add(idx),
+        missed: new Set(state.missed).add(idx),
         attemptedFirstTime,
         streak: 0,
         justHitMilestone: false,
@@ -96,12 +123,14 @@ export function reducer(state, action) {
   }
 }
 
-function QuizScreen({ pack, direction, playerName, sound, onFinish, onBackToMenu }) {
-  const [state, dispatch] = useReducer(reducer, pack, initialQuizState)
-  const [elapsed, setElapsed] = useState(0)
+function QuizScreen({ pack, direction, playerName, sound, onFinish, onBackToMenu, resumeSession }) {
+  const [state, dispatch] = useReducer(reducer, pack, (p) =>
+    resumeSession ? hydrateQuizState(resumeSession.quizState) : initialQuizState(p)
+  )
+  const [elapsed, setElapsed] = useState(resumeSession?.elapsedSeconds ?? 0)
   const [showConfirm, setShowConfirm] = useState(false)
   const [typedValue, setTypedValue] = useState('')
-  const startedAtRef = useRef(Date.now())
+  const startedAtRef = useRef(Date.now() - (resumeSession?.elapsedSeconds ?? 0) * 1000)
   const inputRef = useRef(null)
   const typed = isTypedMode(direction)
 
@@ -126,6 +155,29 @@ function QuizScreen({ pack, direction, playerName, sound, onFinish, onBackToMenu
     setTypedValue('')
     if (inputRef.current) inputRef.current.focus()
   }, [typed, state.activeIndex, state.answered])
+
+  // Snapshot progress after every answer so a refresh can resume instead of losing the round.
+  useEffect(() => {
+    if (state.finished) return
+    saveQuizSession({
+      packId: pack.id,
+      direction,
+      playerName,
+      elapsedSeconds: elapsed,
+      quizState: {
+        queue: state.queue,
+        activeIndex: state.activeIndex,
+        mastered: [...state.mastered],
+        struggling: [...state.struggling],
+        missed: [...state.missed],
+        mistakes: state.mistakes,
+        firstTryCorrect: state.firstTryCorrect,
+        attemptedFirstTime: [...state.attemptedFirstTime],
+        streak: state.streak,
+        bestStreak: state.bestStreak,
+      },
+    })
+  }, [state, pack.id, direction, playerName, elapsed])
 
   const selectOption = (value) => {
     if (state.answered) return
@@ -162,6 +214,7 @@ function QuizScreen({ pack, direction, playerName, sound, onFinish, onBackToMenu
 
   useEffect(() => {
     if (!state.finished) return
+    clearQuizSession()
     const total = pack.questions.length
     const accuracy = Math.round((state.firstTryCorrect / total) * 100)
     let stars = 1
@@ -176,23 +229,37 @@ function QuizScreen({ pack, direction, playerName, sound, onFinish, onBackToMenu
       timeSeconds: elapsed,
       bestStreak: state.bestStreak,
       stars,
+      missed: [...state.missed].map((id) => {
+        const q = pack.questions[id]
+        return { place: q.place, answer: q.answer }
+      }),
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.finished])
 
   useEffect(() => {
     const handler = (e) => {
-      if (e.key !== 'Enter') return
       if (showConfirm) return
-      if (state.answered) dispatch({ type: 'ADVANCE' })
-      else if (typed) submitTyped()
+      if (e.key === 'Enter') {
+        if (state.answered) dispatch({ type: 'ADVANCE' })
+        else if (typed) submitTyped()
+        return
+      }
+      if (!typed && !state.answered && OPTION_KEYS.includes(e.key)) {
+        const opt = options[OPTION_KEYS.indexOf(e.key)]
+        if (opt !== undefined) selectOption(opt)
+      }
     }
     document.addEventListener('keydown', handler)
     return () => document.removeEventListener('keydown', handler)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.answered, showConfirm, typed, typedValue, correctAnswer])
+  }, [state.answered, showConfirm, typed, typedValue, correctAnswer, options])
 
   const requestBackToMenu = () => setShowConfirm(true)
+  const confirmBackToMenu = () => {
+    clearQuizSession()
+    onBackToMenu()
+  }
 
   const trail = pack.questions.map((q) => {
     let cls = 'step'
@@ -243,7 +310,7 @@ function QuizScreen({ pack, direction, playerName, sound, onFinish, onBackToMenu
 
       <div className="quiz-columns">
         <div className="map-card">
-          <img src={pack.image} alt={pack.title} />
+          <img src={pack.image} alt={pack.title} width={pack.imageWidth} height={pack.imageHeight} />
         </div>
 
         <div className="quiz-card">
@@ -272,7 +339,7 @@ function QuizScreen({ pack, direction, playerName, sound, onFinish, onBackToMenu
             </div>
           ) : (
             <div className="options-grid">
-              {options.map((opt) => {
+              {options.map((opt, i) => {
                 let cls = 'option-btn'
                 if (state.answered) {
                   if (opt === correctAnswer) cls += ' correct'
@@ -286,7 +353,10 @@ function QuizScreen({ pack, direction, playerName, sound, onFinish, onBackToMenu
                     disabled={state.answered}
                     onClick={() => selectOption(opt)}
                   >
-                    {opt}
+                    <span className="option-key" aria-hidden="true">
+                      {OPTION_KEYS[i]}
+                    </span>
+                    <span className="option-label">{opt}</span>
                   </button>
                 )
               })}
@@ -295,6 +365,8 @@ function QuizScreen({ pack, direction, playerName, sound, onFinish, onBackToMenu
 
           <div
             className={`msg ${state.lastResult === 'correct' ? 'good' : state.lastResult === 'wrong' ? 'bad' : ''}`}
+            aria-live="polite"
+            aria-atomic="true"
           >
             {state.lastResult === 'correct' && state.message}
             {state.lastResult === 'wrong' && (
@@ -326,7 +398,7 @@ function QuizScreen({ pack, direction, playerName, sound, onFinish, onBackToMenu
         <Modal
           title="Terug naar het hoofdmenu?"
           onClose={() => setShowConfirm(false)}
-          secondaryAction={{ label: 'Ja, stoppen', onClick: onBackToMenu }}
+          secondaryAction={{ label: 'Ja, stoppen', onClick: confirmBackToMenu }}
           primaryAction={{ label: 'Blijf oefenen', onClick: () => setShowConfirm(false) }}
         >
           Je voortgang gaat verloren

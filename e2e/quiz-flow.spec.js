@@ -67,7 +67,8 @@ test('a wrong answer shows the correct place name and resets the streak', async 
   await expect(page.locator('.streak-badge')).toContainText('1 op een rij')
 
   const correctOption = await correctOptionLocator(page)
-  const correctText = await correctOption.innerText()
+  // Read just the answer label, not the option's keyboard-shortcut number badge too.
+  const correctText = await correctOption.locator('.option-label').innerText()
   const wrongOption = page.locator('.option-btn').filter({ hasNotText: correctText }).first()
   await wrongOption.click()
 
