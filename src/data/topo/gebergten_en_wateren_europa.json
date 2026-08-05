@@ -1,0 +1,109 @@
+{
+    "meta": {
+        "title": "Gebergten en Wateren van Europa",
+        "image": "gebergten_en_wateren_europa.jpeg",
+        "description": "Topografie Europa – zeeën, rivieren en gebergten met nummers, letters en Romeinse cijfers"
+    },
+    "questions": [
+        {
+            "place": "Noordelijke IJszee",
+            "answer": "1"
+        },
+        {
+            "place": "Noordzee",
+            "answer": "2"
+        },
+        {
+            "place": "Oostzee",
+            "answer": "3"
+        },
+        {
+            "place": "Botnische Golf",
+            "answer": "4"
+        },
+        {
+            "place": "Finse Golf",
+            "answer": "5"
+        },
+        {
+            "place": "Atlantische Oceaan",
+            "answer": "6"
+        },
+        {
+            "place": "Het Kanaal",
+            "answer": "7"
+        },
+        {
+            "place": "Golf van Biskaje",
+            "answer": "8"
+        },
+        {
+            "place": "Straat van Gibraltar",
+            "answer": "9"
+        },
+        {
+            "place": "Middellandse Zee",
+            "answer": "10"
+        },
+        {
+            "place": "Egeïsche Zee",
+            "answer": "11"
+        },
+        {
+            "place": "Zwarte Zee",
+            "answer": "12"
+        },
+        {
+            "place": "Kaukasus",
+            "answer": "I"
+        },
+        {
+            "place": "Ardennen",
+            "answer": "II"
+        },
+        {
+            "place": "Pyreneeën",
+            "answer": "III"
+        },
+        {
+            "place": "Alpen",
+            "answer": "IV"
+        },
+        {
+            "place": "Oeral",
+            "answer": "V"
+        },
+        {
+            "place": "Theems",
+            "answer": "a"
+        },
+        {
+            "place": "Seine",
+            "answer": "b"
+        },
+        {
+            "place": "Rijn",
+            "answer": "c"
+        },
+        {
+            "place": "Elbe",
+            "answer": "d"
+        },
+        {
+            "place": "Oder",
+            "answer": "e"
+        },
+        {
+            "place": "Donau",
+            "answer": "f"
+        },
+        {
+            "place": "Po",
+            "answer": "g"
+        },
+        {
+            "place": "Ebre",
+            "answer": "h"
+        }
+    ]
+}

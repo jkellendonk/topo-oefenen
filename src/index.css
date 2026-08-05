@@ -1,0 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Nunito:wght@400;600;700;800&display=swap');
+@import "./styles/topo.css";
+
+body {
+  margin: 0;
+  background: var(--bg);
+}

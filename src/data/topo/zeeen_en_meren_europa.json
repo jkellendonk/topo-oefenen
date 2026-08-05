@@ -1,0 +1,105 @@
+{
+    "meta": {
+        "title": "Zeeën en meren van Europa",
+        "image": "zeeen_en_meren_europa.jpeg",
+        "description": "Topografie – zeeën en meren van Europa met nummers en letters"
+    },
+    "questions": [
+        {
+            "place": "Noordelijke IJszee",
+            "answer": "1"
+        },
+        {
+            "place": "Witte Zee",
+            "answer": "2"
+        },
+        {
+            "place": "Botnische Golf",
+            "answer": "3"
+        },
+        {
+            "place": "Finse Golf",
+            "answer": "4"
+        },
+        {
+            "place": "Oostzee",
+            "answer": "5"
+        },
+        {
+            "place": "Skagerrak",
+            "answer": "6"
+        },
+        {
+            "place": "Noordzee",
+            "answer": "7"
+        },
+        {
+            "place": "Keltische Zee",
+            "answer": "8"
+        },
+        {
+            "place": "Het Kanaal",
+            "answer": "9"
+        },
+        {
+            "place": "Atlantische Oceaan",
+            "answer": "10"
+        },
+        {
+            "place": "Golf van Biskaje",
+            "answer": "11"
+        },
+        {
+            "place": "Golf van Lion",
+            "answer": "12"
+        },
+        {
+            "place": "Middellandse Zee",
+            "answer": "13"
+        },
+        {
+            "place": "Adriatische Zee",
+            "answer": "14"
+        },
+        {
+            "place": "Zwarte Zee",
+            "answer": "15"
+        },
+        {
+            "place": "Zee van Azov",
+            "answer": "16"
+        },
+        {
+            "place": "Bosporus",
+            "answer": "17"
+        },
+        {
+            "place": "Egeïsche Zee",
+            "answer": "18"
+        },
+        {
+            "place": "Straat van Gibraltar",
+            "answer": "19"
+        },
+        {
+            "place": "Vänern",
+            "answer": "a"
+        },
+        {
+            "place": "Vättern",
+            "answer": "b"
+        },
+        {
+            "place": "Ladogameer",
+            "answer": "c"
+        },
+        {
+            "place": "Onegameer",
+            "answer": "d"
+        },
+        {
+            "place": "Inarimeer",
+            "answer": "e"
+        }
+    ]
+}
