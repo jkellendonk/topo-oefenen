@@ -261,12 +261,21 @@ function QuizScreen({ pack, direction, playerName, sound, onFinish, onBackToMenu
     onBackToMenu()
   }
 
-  const trail = pack.questions.map((q) => {
+  // Progress dots, drawn in "how far along am I" order rather than question order.
+  // Keying them to question identity/position would leak the answer: with the
+  // questions numbered 1..N, the highlighted dot's index gives the number away.
+  const masteredCount = state.mastered.size
+  const strugglingCount = Math.max(
+    0,
+    state.struggling.size - (state.struggling.has(state.activeIndex) ? 1 : 0)
+  )
+  const currentPos = state.answered ? -1 : masteredCount + strugglingCount
+  const trail = Array.from({ length: pack.questions.length }, (_, i) => {
     let cls = 'step'
-    if (state.mastered.has(q.id)) cls += ' mastered'
-    else if (q.id === state.activeIndex && !state.answered) cls += ' current'
-    else if (state.struggling.has(q.id)) cls += ' struggling'
-    return <div key={q.id} className={cls}></div>
+    if (i < masteredCount) cls += ' mastered'
+    else if (i < masteredCount + strugglingCount) cls += ' struggling'
+    else if (i === currentPos) cls += ' current'
+    return <div key={i} className={cls}></div>
   })
 
   return (

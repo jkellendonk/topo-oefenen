@@ -287,6 +287,109 @@ describe('QuizScreen', () => {
   })
 })
 
+describe('QuizScreen — progress dots do not leak the answer', () => {
+  const steps = () => [...document.querySelectorAll('.trail .step')]
+  const classesAfterStep = () => steps().map((s) => s.className.replace('step', '').trim() || 'plain')
+
+  const fullState = (over) => ({
+    queue: [0, 1, 2, 3, 4, 5],
+    activeIndex: 0,
+    mastered: [],
+    struggling: [],
+    missed: [],
+    mistakes: 0,
+    firstTryCorrect: 0,
+    attemptedFirstTime: [],
+    streak: 0,
+    bestStreak: 0,
+    ...over,
+  })
+  const resume = (quizState) => ({
+    packId: pack.id,
+    direction: 'code-name',
+    playerName: 'Sam',
+    elapsedSeconds: 0,
+    quizState,
+  })
+
+  it('draws one dot per question', () => {
+    renderQuiz()
+    expect(steps()).toHaveLength(pack.questions.length)
+  })
+
+  it('highlights the first dot at the start even when the active question is not question #1', () => {
+    // Nothing answered yet, but the shuffled queue starts on question index 4.
+    renderQuiz({ resumeSession: resume(fullState({ queue: [4, 5, 0, 1, 2, 3], activeIndex: 4 })) })
+
+    const cls = classesAfterStep()
+    expect(cls[0]).toBe('current') // position = progress (0), not the active question's index
+    expect(cls.filter((c) => c === 'current')).toHaveLength(1)
+    expect(cls.slice(1)).toEqual(['plain', 'plain', 'plain', 'plain', 'plain'])
+  })
+
+  it('fills mastered dots from the left, not at the answered question’s own index', () => {
+    // Resume mid-shuffle: the active question is index 3 ("Finland" / code "4").
+    renderQuiz({ resumeSession: resume(fullState({ queue: [3, 4, 5, 0, 1, 2], activeIndex: 3 })) })
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'Finland' }))
+    })
+    act(() => {
+      vi.advanceTimersByTime(700)
+    })
+
+    const cls = classesAfterStep()
+    expect(cls[0]).toBe('mastered') // one answered -> leftmost dot fills
+    expect(cls[1]).toBe('current')
+    expect(cls[3]).not.toBe('mastered') // the dot at the question's own index stays neutral
+    expect(cls.filter((c) => c === 'mastered')).toHaveLength(1)
+  })
+
+  it('counts a missed question as a struggling dot without pinning it to that question’s index', () => {
+    // Active question is index 2 ("Zweden" / code "3"). The MCQ distractor set is
+    // randomised, so click whichever option isn't the correct one.
+    renderQuiz({ resumeSession: resume(fullState({ queue: [2, 3, 4, 5, 0, 1], activeIndex: 2 })) })
+
+    const wrongOption = screen
+      .getAllByRole('button')
+      .find(
+        (btn) =>
+          btn.classList.contains('option-btn') &&
+          btn.querySelector('.option-label').textContent !== 'Zweden'
+      )
+    act(() => {
+      fireEvent.click(wrongOption)
+    })
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: /Volgende/ }))
+    })
+
+    const cls = classesAfterStep()
+    expect(cls[0]).toBe('struggling')
+    expect(cls[1]).toBe('current')
+    expect(cls[2]).toBe('plain') // not pinned to the missed question's index (2)
+    expect(cls.filter((c) => c === 'struggling')).toHaveLength(1)
+  })
+
+  it('keeps the highlighted dot at "number answered", so it never reveals the code', () => {
+    renderQuiz() // identity queue, starts on question 0
+
+    const correctByPrompt = { 1: 'IJsland', 2: 'Noorwegen', 3: 'Zweden', 4: 'Finland', 5: 'Ierland', 6: 'Schotland' }
+    for (let answered = 1; answered <= 3; answered++) {
+      const shown = document.querySelector('.prompt-word').textContent
+      act(() => {
+        fireEvent.click(screen.getByRole('button', { name: correctByPrompt[shown] }))
+      })
+      act(() => {
+        vi.advanceTimersByTime(700)
+      })
+      const cls = classesAfterStep()
+      const currentIndex = cls.indexOf('current')
+      expect(currentIndex).toBe(answered) // position tracks progress, not the active code
+    }
+  })
+})
+
 describe('QuizScreen — toets (typed) mode', () => {
   it('shows a "Waar ligt ...?" question, a text input, and a TOETS badge instead of multiple choice', () => {
     renderQuiz({ direction: 'toets' })
