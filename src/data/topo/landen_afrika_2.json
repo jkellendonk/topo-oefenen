@@ -1,0 +1,113 @@
+{
+    "meta": {
+        "title": "Landen van Afrika – deel 2",
+        "image": "landen_afrika.webp",
+        "description": "Topografie – Landen van Afrika (deel 2: nummers 27–52) met nummers"
+    },
+    "questions": [
+        {
+            "place": "Centraal-Afrika",
+            "answer": "27"
+        },
+        {
+            "place": "Zuid-Soedan",
+            "answer": "28"
+        },
+        {
+            "place": "Ethiopië",
+            "answer": "29"
+        },
+        {
+            "place": "Djibouti",
+            "answer": "30"
+        },
+        {
+            "place": "Somalië",
+            "answer": "31"
+        },
+        {
+            "place": "Equatoriaal-Guinea",
+            "answer": "32"
+        },
+        {
+            "place": "Gabon",
+            "answer": "33"
+        },
+        {
+            "place": "Congo-Brazzaville",
+            "answer": "34"
+        },
+        {
+            "place": "Congo-Kinshasa",
+            "answer": "35"
+        },
+        {
+            "place": "Uganda",
+            "answer": "36"
+        },
+        {
+            "place": "Kenia",
+            "answer": "37"
+        },
+        {
+            "place": "Rwanda",
+            "answer": "38"
+        },
+        {
+            "place": "Burundi",
+            "answer": "39"
+        },
+        {
+            "place": "Tanzania",
+            "answer": "40"
+        },
+        {
+            "place": "Angola",
+            "answer": "41"
+        },
+        {
+            "place": "Zambia",
+            "answer": "42"
+        },
+        {
+            "place": "Malawi",
+            "answer": "43"
+        },
+        {
+            "place": "Mozambique",
+            "answer": "44"
+        },
+        {
+            "place": "Namibië",
+            "answer": "45"
+        },
+        {
+            "place": "Botswana",
+            "answer": "46"
+        },
+        {
+            "place": "Zimbabwe",
+            "answer": "47"
+        },
+        {
+            "place": "Zuid-Afrika",
+            "answer": "48"
+        },
+        {
+            "place": "Lesotho",
+            "answer": "49"
+        },
+        {
+            "place": "Swaziland",
+            "answer": "50"
+        },
+        {
+            "place": "Madagaskar",
+            "answer": "51"
+        },
+        {
+            "place": "Mauritius",
+            "answer": "52"
+        }
+    ]
+}

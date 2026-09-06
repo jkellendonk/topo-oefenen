@@ -32,11 +32,13 @@ function writeScores(scores) {
 }
 
 export function getPacks(group) {
+  const list = group ? TOPO_PACKS.filter((p) => p.group === group) : TOPO_PACKS
   return Promise.resolve(
-    TOPO_PACKS.filter((p) => p.group === group).map((p) => ({
+    list.map((p) => ({
       id: p.id,
       title: p.data.meta.title,
       count: p.data.questions.length,
+      group: p.group,
     }))
   )
 }

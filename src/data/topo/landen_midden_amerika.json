@@ -1,0 +1,77 @@
+{
+    "meta": {
+        "title": "Landen van Midden-Amerika",
+        "image": "landen_midden_amerika.webp",
+        "description": "Topografie – Landen van Midden-Amerika en de Cariben met nummers"
+    },
+    "questions": [
+        {
+            "place": "Belize",
+            "answer": "1"
+        },
+        {
+            "place": "Guatemala",
+            "answer": "2"
+        },
+        {
+            "place": "Honduras",
+            "answer": "3"
+        },
+        {
+            "place": "El Salvador",
+            "answer": "4"
+        },
+        {
+            "place": "Nicaragua",
+            "answer": "5"
+        },
+        {
+            "place": "Costa Rica",
+            "answer": "6"
+        },
+        {
+            "place": "Panama",
+            "answer": "7"
+        },
+        {
+            "place": "Aruba",
+            "answer": "8"
+        },
+        {
+            "place": "Curaçao",
+            "answer": "9"
+        },
+        {
+            "place": "Bonaire",
+            "answer": "10"
+        },
+        {
+            "place": "Trinidad en Tobago",
+            "answer": "11"
+        },
+        {
+            "place": "Cuba",
+            "answer": "12"
+        },
+        {
+            "place": "Jamaica",
+            "answer": "13"
+        },
+        {
+            "place": "Bahama's",
+            "answer": "14"
+        },
+        {
+            "place": "Haïti",
+            "answer": "15"
+        },
+        {
+            "place": "Dominicaanse Republiek",
+            "answer": "16"
+        },
+        {
+            "place": "Puerto Rico",
+            "answer": "17"
+        }
+    ]
+}

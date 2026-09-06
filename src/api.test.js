@@ -19,14 +19,36 @@ describe('getPacks', () => {
     }
   })
 
-  it('returns an empty list for Groep 8 until it is filled in', async () => {
+  it('returns the Groep 8 map packs with a count', async () => {
     const packs = await getPacks('Groep 8')
-    expect(packs).toEqual([])
+    const expectedIds = TOPO_PACKS.filter((p) => p.group === 'Groep 8').map((p) => p.id)
+    expect(packs.length).toBeGreaterThan(0)
+    expect(packs.map((p) => p.id).sort()).toEqual([...expectedIds].sort())
+    for (const pack of packs) {
+      const entry = TOPO_PACKS.find((p) => p.id === pack.id)
+      expect(pack.count).toBe(entry.data.questions.length)
+      expect(pack.title).toBe(entry.data.meta.title)
+    }
   })
 
   it('returns an empty list for an unknown group', async () => {
     const packs = await getPacks('Groep 12')
     expect(packs).toEqual([])
+  })
+
+  it('returns every pack across all groups when called without a group', async () => {
+    const packs = await getPacks()
+    expect(packs.map((p) => p.id).sort()).toEqual(TOPO_PACKS.map((p) => p.id).sort())
+  })
+
+  it('tags each returned pack with its group so the start page can split them', async () => {
+    const packs = await getPacks()
+    for (const pack of packs) {
+      expect(['Groep 7', 'Groep 8']).toContain(pack.group)
+      expect(pack.group).toBe(TOPO_PACKS.find((p) => p.id === pack.id).group)
+    }
+    expect(packs.some((p) => p.group === 'Groep 7')).toBe(true)
+    expect(packs.some((p) => p.group === 'Groep 8')).toBe(true)
   })
 })
 
@@ -50,6 +72,22 @@ describe('getPack', () => {
   it('returns null for an unknown pack id', async () => {
     const pack = await getPack('does-not-exist')
     expect(pack).toBeNull()
+  })
+
+  it('resolves a Groep 8 werelddeel pack with its intrinsic image size', async () => {
+    const pack = await getPack('landen_azie')
+    expect(pack.title).toBe('Landen van Azië')
+    expect(pack.questions).toHaveLength(25)
+    expect(pack.imageWidth).toBe(830)
+    expect(pack.imageHeight).toBe(774)
+  })
+
+  it('gives the two Afrika toetsen the same image but different question sets', async () => {
+    const [a1, a2] = await Promise.all([getPack('landen_afrika_1'), getPack('landen_afrika_2')])
+    expect(a1.image).toBe(a2.image)
+    expect(a1.questions[0].place).toBe('Marokko')
+    expect(a2.questions[0].place).toBe('Centraal-Afrika')
+    expect(a1.questions.map((q) => q.answer)).not.toEqual(a2.questions.map((q) => q.answer))
   })
 })
 

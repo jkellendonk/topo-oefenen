@@ -1,0 +1,109 @@
+{
+    "meta": {
+        "title": "Landen van Azië",
+        "image": "landen_azie.webp",
+        "description": "Topografie – Landen van Azië met nummers"
+    },
+    "questions": [
+        {
+            "place": "Rusland",
+            "answer": "1"
+        },
+        {
+            "place": "Kazachstan",
+            "answer": "2"
+        },
+        {
+            "place": "Mongolië",
+            "answer": "3"
+        },
+        {
+            "place": "China",
+            "answer": "4"
+        },
+        {
+            "place": "Noord-Korea",
+            "answer": "5"
+        },
+        {
+            "place": "Zuid-Korea",
+            "answer": "6"
+        },
+        {
+            "place": "Japan",
+            "answer": "7"
+        },
+        {
+            "place": "Pakistan",
+            "answer": "8"
+        },
+        {
+            "place": "India",
+            "answer": "9"
+        },
+        {
+            "place": "Nepal",
+            "answer": "10"
+        },
+        {
+            "place": "Bhutan",
+            "answer": "11"
+        },
+        {
+            "place": "Bangladesh",
+            "answer": "12"
+        },
+        {
+            "place": "Myanmar",
+            "answer": "13"
+        },
+        {
+            "place": "Thailand",
+            "answer": "14"
+        },
+        {
+            "place": "Laos",
+            "answer": "15"
+        },
+        {
+            "place": "Vietnam",
+            "answer": "16"
+        },
+        {
+            "place": "Cambodja",
+            "answer": "17"
+        },
+        {
+            "place": "Filipijnen",
+            "answer": "18"
+        },
+        {
+            "place": "Taiwan",
+            "answer": "19"
+        },
+        {
+            "place": "Maleisië",
+            "answer": "20"
+        },
+        {
+            "place": "Brunei",
+            "answer": "21"
+        },
+        {
+            "place": "Singapore",
+            "answer": "22"
+        },
+        {
+            "place": "Indonesië",
+            "answer": "23"
+        },
+        {
+            "place": "Sri Lanka",
+            "answer": "24"
+        },
+        {
+            "place": "Oost-Timor",
+            "answer": "25"
+        }
+    ]
+}

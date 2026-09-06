@@ -1,0 +1,37 @@
+{
+    "meta": {
+        "title": "Landen van Noord-Amerika",
+        "image": "landen_noord_amerika.webp",
+        "description": "Topografie – Landen van Noord-Amerika met nummers en Romeinse cijfers"
+    },
+    "questions": [
+        {
+            "place": "Groenland",
+            "answer": "1"
+        },
+        {
+            "place": "Canada",
+            "answer": "2"
+        },
+        {
+            "place": "Verenigde Staten",
+            "answer": "3"
+        },
+        {
+            "place": "Mexico",
+            "answer": "4"
+        },
+        {
+            "place": "Bermuda-eilanden",
+            "answer": "5"
+        },
+        {
+            "place": "Alaska",
+            "answer": "I"
+        },
+        {
+            "place": "Hawaï",
+            "answer": "II"
+        }
+    ]
+}

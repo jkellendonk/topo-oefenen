@@ -1,0 +1,113 @@
+{
+    "meta": {
+        "title": "Landen van Afrika – deel 1",
+        "image": "landen_afrika.webp",
+        "description": "Topografie – Landen van Afrika (deel 1: nummers 1–26) met nummers"
+    },
+    "questions": [
+        {
+            "place": "Marokko",
+            "answer": "1"
+        },
+        {
+            "place": "Algerije",
+            "answer": "2"
+        },
+        {
+            "place": "Tunesië",
+            "answer": "3"
+        },
+        {
+            "place": "Libië",
+            "answer": "4"
+        },
+        {
+            "place": "Egypte",
+            "answer": "5"
+        },
+        {
+            "place": "Westelijke Sahara",
+            "answer": "6"
+        },
+        {
+            "place": "Mauritanië",
+            "answer": "7"
+        },
+        {
+            "place": "Mali",
+            "answer": "8"
+        },
+        {
+            "place": "Niger",
+            "answer": "9"
+        },
+        {
+            "place": "Tsjaad",
+            "answer": "10"
+        },
+        {
+            "place": "Soedan",
+            "answer": "11"
+        },
+        {
+            "place": "Eritrea",
+            "answer": "12"
+        },
+        {
+            "place": "Kaapverdië",
+            "answer": "13"
+        },
+        {
+            "place": "Senegal",
+            "answer": "14"
+        },
+        {
+            "place": "Gambia",
+            "answer": "15"
+        },
+        {
+            "place": "Guinee-Bissau",
+            "answer": "16"
+        },
+        {
+            "place": "Guinee",
+            "answer": "17"
+        },
+        {
+            "place": "Sierra Leone",
+            "answer": "18"
+        },
+        {
+            "place": "Liberia",
+            "answer": "19"
+        },
+        {
+            "place": "Ivoorkust",
+            "answer": "20"
+        },
+        {
+            "place": "Burkina Faso",
+            "answer": "21"
+        },
+        {
+            "place": "Ghana",
+            "answer": "22"
+        },
+        {
+            "place": "Togo",
+            "answer": "23"
+        },
+        {
+            "place": "Benin",
+            "answer": "24"
+        },
+        {
+            "place": "Nigeria",
+            "answer": "25"
+        },
+        {
+            "place": "Kameroen",
+            "answer": "26"
+        }
+    ]
+}

@@ -1,0 +1,69 @@
+{
+    "meta": {
+        "title": "Landen van Zuid-Amerika",
+        "image": "landen_zuid_amerika.webp",
+        "description": "Topografie – Landen van Zuid-Amerika met nummers en letters"
+    },
+    "questions": [
+        {
+            "place": "Colombia",
+            "answer": "1"
+        },
+        {
+            "place": "Venezuela",
+            "answer": "2"
+        },
+        {
+            "place": "Guyana",
+            "answer": "3"
+        },
+        {
+            "place": "Suriname",
+            "answer": "4"
+        },
+        {
+            "place": "Frans-Guyana",
+            "answer": "5"
+        },
+        {
+            "place": "Ecuador",
+            "answer": "6"
+        },
+        {
+            "place": "Peru",
+            "answer": "7"
+        },
+        {
+            "place": "Brazilië",
+            "answer": "8"
+        },
+        {
+            "place": "Bolivia",
+            "answer": "9"
+        },
+        {
+            "place": "Paraguay",
+            "answer": "10"
+        },
+        {
+            "place": "Argentinië",
+            "answer": "11"
+        },
+        {
+            "place": "Uruguay",
+            "answer": "12"
+        },
+        {
+            "place": "Chili",
+            "answer": "13"
+        },
+        {
+            "place": "Galapagoseilanden",
+            "answer": "a"
+        },
+        {
+            "place": "Falklandeilanden",
+            "answer": "b"
+        }
+    ]
+}

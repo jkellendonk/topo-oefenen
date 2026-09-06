@@ -1,0 +1,41 @@
+{
+    "meta": {
+        "title": "Landen van Oceanië",
+        "image": "landen_oceanie.webp",
+        "description": "Topografie – Landen van Oceanië met nummers"
+    },
+    "questions": [
+        {
+            "place": "Australië",
+            "answer": "1"
+        },
+        {
+            "place": "Papoea-Nieuw-Guinea",
+            "answer": "2"
+        },
+        {
+            "place": "Salomonseilanden",
+            "answer": "3"
+        },
+        {
+            "place": "Nieuw-Caledonië",
+            "answer": "4"
+        },
+        {
+            "place": "Vanuatu",
+            "answer": "5"
+        },
+        {
+            "place": "Fiji",
+            "answer": "6"
+        },
+        {
+            "place": "Tasmanië",
+            "answer": "7"
+        },
+        {
+            "place": "Nieuw-Zeeland",
+            "answer": "8"
+        }
+    ]
+}
