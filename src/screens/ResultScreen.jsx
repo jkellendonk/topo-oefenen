@@ -46,11 +46,13 @@ function ResultScreen({ pack, direction, playerName, result, sound, onPlayAgain,
   }, [onPlayAgain])
 
   const praise =
-    result.stars === 3
-      ? 'Fantastisch werk! Bijna alles in één keer goed.'
-      : result.stars === 2
-        ? 'Goed bezig! Nog een paar keer oefenen en het zit er helemaal in.'
-        : 'Mooie eerste ronde! Elke keer oefenen maakt je sneller.'
+    result.accuracy === 100
+      ? 'Foutloos! Alles in één keer goed. 🎉'
+      : result.stars === 3
+        ? 'Fantastisch werk! Bijna alles in één keer goed.'
+        : result.stars === 2
+          ? 'Goed bezig! Nog een paar keer oefenen en het zit er helemaal in.'
+          : 'Mooie eerste ronde! Elke keer oefenen maakt je sneller.'
 
   return (
     <>

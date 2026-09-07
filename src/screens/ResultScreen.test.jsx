@@ -62,6 +62,18 @@ describe('ResultScreen', () => {
     expect(screen.queryByText(/Nieuw persoonlijk record/)).not.toBeInTheDocument()
   })
 
+  it('celebrates a flawless round instead of saying "bijna alles"', () => {
+    renderResult({ result: { ...result, accuracy: 100, mistakes: 0 } })
+    expect(screen.getByText(/Foutloos! Alles in één keer goed/)).toBeInTheDocument()
+    expect(screen.queryByText(/Bijna alles in één keer goed/)).not.toBeInTheDocument()
+  })
+
+  it('still says "bijna alles" for a strong-but-not-perfect 3-star round', () => {
+    renderResult({ result: { ...result, accuracy: 92 } })
+    expect(screen.getByText(/Bijna alles in één keer goed/)).toBeInTheDocument()
+    expect(screen.queryByText(/Foutloos/)).not.toBeInTheDocument()
+  })
+
   it('shows a TOETS badge when the result came from the typed toets mode', () => {
     renderResult({ direction: 'toets' })
     expect(screen.getByText('📝 TOETS')).toBeInTheDocument()
