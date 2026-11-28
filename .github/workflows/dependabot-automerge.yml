@@ -1,0 +1,35 @@
+name: Dependabot auto-merge
+
+on:
+  workflow_run:
+    workflows: ["CI en Deploy naar GitHub Pages"]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+jobs:
+  merge-and-deploy:
+    runs-on: ubuntu-latest
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.actor.login == 'dependabot[bot]' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      REPO: ${{ github.repository }}
+      BRANCH: ${{ github.event.workflow_run.head_branch }}
+      SHA: ${{ github.event.workflow_run.head_sha }}
+    steps:
+      - name: Merge the tested commit and deploy
+        run: |
+          author=$(gh pr view "$BRANCH" --repo "$REPO" --json author --jq .author.login)
+          if [ "$author" != "app/dependabot" ]; then
+            echo "Not a Dependabot PR (author: $author), skipping."
+            exit 0
+          fi
+          gh pr merge "$BRANCH" --repo "$REPO" --squash --delete-branch --match-head-commit "$SHA"
+          gh workflow run deploy.yml --repo "$REPO" --ref main
